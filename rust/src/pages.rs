@@ -1,8 +1,16 @@
+#[path = "papers.rs"]
+mod papers;
+
 #[derive(Debug)]
-pub struct PaperProps {
-    name: &'static str,
-    width: i32,
-    height: i32,
+pub struct PageProps {
+    paper: &'static papers::PaperProps,
+    margins: f32,
 }
 
-pub static A4 : PaperProps = PaperProps { name: "A4", width: 595, height: 842 };
+impl PageProps {
+    pub fn line_max_width(&self) -> f32 {
+        self.paper.width - (self.margins * 2.0)
+    }
+}
+
+pub static DEFAULT : PageProps = PageProps { margins: 10.0, paper: &papers::A4 };

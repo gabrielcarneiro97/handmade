@@ -1,11 +1,13 @@
 mod words;
 mod colors;
-mod pages;
+mod papers;
+mod text;
 
 use words::*;
+use text::*;
 
 fn main() {
     let word = Word::new("Teste");
 
-    println!("{:#?}", pages::A4);
+    println!("{:#?}", papers::A4);
 }

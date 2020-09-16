@@ -1,15 +1,19 @@
 
 #[derive(Debug)]
-struct Letter {
+pub struct Letter {
     raw: char,
     width: f32,
 }
 
 impl Letter {
-    pub fn letter_width(letter: char) -> f32 {
+    pub fn char_width(letter: char) -> f32 {
         match letter {
             _ => 7.0,
         }
+    }
+
+    pub fn spc_width() -> f32 {
+        Letter::char_width(' ')
     }
 }
 
@@ -17,7 +21,7 @@ impl Letter {
 pub struct Word {
     raw: String,
     letters: Vec<Letter>,
-    width: f32,
+    pub width: f32,
 }
 
 impl Word {
@@ -31,7 +35,7 @@ impl Word {
         let chars : Vec<char> = this.raw.chars().collect();
 
         for letter in chars {
-            let lw = Letter::letter_width(letter);
+            let lw = Letter::char_width(letter);
             this.letters.push(Letter { raw: letter, width: lw });
             this.width += lw;
         }
