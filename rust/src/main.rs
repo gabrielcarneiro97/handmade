@@ -1,5 +1,11 @@
+mod words;
+mod colors;
+mod pages;
+
+use words::*;
 
 fn main() {
-    println!("Top");
+    let word = Word::new("Teste");
 
+    println!("{:#?}", pages::A4);
 }
