@@ -34,13 +34,13 @@ impl Line {
     }
 }
 
-pub struct Text {
+pub struct Text<'a> {
     raw: String,
     lines: Vec<Line>,
-    page_props: PageProps,
+    page_props: PageProps<'a>,
 }
 
-impl Text {
+impl Text<'_> {
     pub fn new(page_props: PageProps) -> Text {
         Text {
             raw: String::new(),

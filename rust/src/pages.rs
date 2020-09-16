@@ -2,12 +2,12 @@
 mod papers;
 
 #[derive(Debug)]
-pub struct PageProps {
-    paper: &'static papers::PaperProps,
+pub struct PageProps<'a> {
+    paper: &'a papers::PaperProps<'a>,
     margins: f32,
 }
 
-impl PageProps {
+impl PageProps<'_> {
     pub fn line_max_width(&self) -> f32 {
         self.paper.width - (self.margins * 2.0)
     }

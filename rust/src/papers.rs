@@ -1,6 +1,6 @@
 #[derive(Debug)]
-pub struct PaperProps {
-    pub name: &'static str,
+pub struct PaperProps<'a> {
+    pub name: &'a str,
     pub width: f32,
     pub height: f32,
 }
