@@ -1,11 +1,12 @@
-
-mod words;
+pub mod words;
 
 pub mod pages;
 
-
-use words::{ Word, Letter };
+use words::{Word, Letter};
 use pages::PageProps;
+
+use image::*;
+use std::{convert::AsRef, path::Path};
 
 pub struct Line {
     words: Vec<Word>,
@@ -83,5 +84,37 @@ impl Text<'_> {
             }
             println!();
         }
+    }
+
+    pub fn to_img(&self) -> Vec<RgbImage> {
+        let mut pages = Vec::new();
+
+        let mut page : RgbImage = ImageBuffer::new(self.page_props.paper.width, self.page_props.paper.height);
+
+        let mut y = self.page_props.margins;
+        for line in &self.lines {
+            let mut x = self.page_props.margins;
+            for word in &line.words {
+                for letter in &word.letters {
+                    let l_img = Letter::get_img(letter.raw).unwrap();
+                    imageops::overlay(&mut page, &l_img.to_rgb(), x as u32, y as u32);
+                    x += letter.width;
+                }
+
+                x += Letter::spc_width();
+            }
+
+            y += self.page_props.line_height;
+
+            if y >= self.page_props.paper.height as f32 - self.page_props.margins + self.page_props.line_height {
+                pages.push(page);
+                page = ImageBuffer::new(self.page_props.paper.width, self.page_props.paper.height);
+                y = self.page_props.margins;
+            }
+
+        }
+
+        pages.push(page);
+        pages
     }
 }
