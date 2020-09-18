@@ -1,4 +1,3 @@
-#[path = "papers.rs"]
 mod papers;
 
 #[derive(Debug)]

@@ -42,5 +42,9 @@ impl Word {
 
         this
     }
+
+    pub fn get_raw(&self) -> &String {
+        &self.raw
+    }
 }
 

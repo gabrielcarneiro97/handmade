@@ -1,9 +1,7 @@
 
-#[path = "words.rs"]
 mod words;
 
-#[path = "pages.rs"]
-mod pages;
+pub mod pages;
 
 
 use words::{ Word, Letter };
@@ -37,11 +35,11 @@ impl Line {
 pub struct Text<'a> {
     raw: String,
     lines: Vec<Line>,
-    page_props: PageProps<'a>,
+    page_props: &'a PageProps<'a>,
 }
 
 impl Text<'_> {
-    pub fn new(page_props: PageProps) -> Text {
+    pub fn new<'a>(page_props: &'a PageProps) -> Text<'a> {
         Text {
             raw: String::new(),
             page_props,
@@ -72,5 +70,18 @@ impl Text<'_> {
         }
 
         self.raw = string;
+    }
+
+    pub fn parse_str(&mut self, str: &str) {
+        self.parse(String::from(str));
+    }
+
+    pub fn print(&self) {
+        for line in &self.lines {
+            for word in &line.words {
+                print!("{} ", word.get_raw());
+            }
+            println!();
+        }
     }
 }
