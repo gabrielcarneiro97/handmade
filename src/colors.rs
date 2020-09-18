@@ -1,8 +1,8 @@
 #[derive(Debug)]
 pub struct Color {
-    red: i16,
-    green: i16,
-    blue: i16,
+    red: u8,
+    green: u8,
+    blue: u8,
     alpha: f32,
 }
 
