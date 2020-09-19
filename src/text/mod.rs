@@ -6,7 +6,6 @@ use words::{Word, Letter};
 use pages::PageProps;
 
 use image::*;
-use std::{convert::AsRef, path::Path};
 
 pub struct Line {
     words: Vec<Word>,
@@ -89,7 +88,7 @@ impl Text<'_> {
     pub fn to_img(&self) -> Vec<RgbImage> {
         let mut pages = Vec::new();
 
-        let mut page : RgbImage = ImageBuffer::new(self.page_props.paper.width, self.page_props.paper.height);
+        let mut page : RgbImage = self.page_props.white_page();
 
         let mut y = self.page_props.margins;
         for line in &self.lines {
@@ -106,9 +105,9 @@ impl Text<'_> {
 
             y += self.page_props.line_height;
 
-            if y >= self.page_props.paper.height as f32 - self.page_props.margins + self.page_props.line_height {
+            if y >= self.page_props.canvas.height as f32 - self.page_props.margins + self.page_props.line_height {
                 pages.push(page);
-                page = ImageBuffer::new(self.page_props.paper.width, self.page_props.paper.height);
+                page = self.page_props.white_page();
                 y = self.page_props.margins;
             }
 
