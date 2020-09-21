@@ -88,7 +88,7 @@ impl Text<'_> {
     pub fn to_img(&self) -> Vec<RgbImage> {
         let mut pages = Vec::new();
 
-        let mut page : RgbImage = self.page_props.white_page();
+        let mut page = self.page_props.white_page();
 
         let mut y = self.page_props.margins;
         for line in &self.lines {
