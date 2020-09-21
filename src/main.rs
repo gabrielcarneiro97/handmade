@@ -22,10 +22,10 @@ fn main() {
     let img = img.to_rgba();
 
     let res = connected_components(&img, Connectivity::Eight, image::Rgba([255, 255, 255, 1]));
-    // res.save("./src/assets/00 abc 2 connected.png");w
+    // res.save("./src/assets/00 abc 2 connected.png");
     // println!("{:?}", res);
 
-    // let mut text = Text::new(&pages::DEFAULT);
+    let mut text = Text::new(&pages::DEFAULT);
     // text.parse_str(_LOREM);
 
     // let images = text.to_img();
