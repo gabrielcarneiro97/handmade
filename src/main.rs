@@ -14,23 +14,23 @@ static _LOREM : &str = "Lorem ipsum dolor sit amet, consectetur adipiscing elit.
 fn main() {
     // text_img::update_images("./src/assets/00 abc 2.png");
 
-    let img = match image::open("./src/assets/00 abc 2.png") {
-        Ok(i) => i,
-        Err(e) => panic!(e),
-    };
+    // let img = match image::open("./src/assets/00 abc 2.png") {
+    //     Ok(i) => i,
+    //     Err(e) => panic!(e),
+    // };
 
-    let img = img.to_rgba();
+    // let img = img.to_rgba();
 
-    let res = connected_components(&img, Connectivity::Eight, image::Rgba([255, 255, 255, 1]));
+    // let res = connected_components(&img, Connectivity::Eight, image::Rgba([255, 255, 255, 1]));
     // res.save("./src/assets/00 abc 2 connected.png");
     // println!("{:?}", res);
 
     let mut text = Text::new(&pages::DEFAULT);
-    // text.parse_str(_LOREM);
+    text.parse_str(_LOREM);
 
-    // let images = text.to_img();
+    let images = text.to_img();
 
-    // for (i, img) in images.iter().enumerate() {
-    //     img.save(format!("./output/pag-{}.png", i)).unwrap();
-    // }
+    for (i, img) in images.iter().enumerate() {
+        img.save(format!("./output/pag-{}.png", i)).unwrap();
+    }
 }

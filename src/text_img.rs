@@ -18,10 +18,10 @@ pub fn update_images<P: AsRef<Path>>(path: P) {
 
     let mut x_pos = 0;
 
-    for c in &words::CHARS {
+    for c in &CHARS {
         let this = image::imageops::crop(&mut img, 0 + x_pos, 0, 30, 35);
 
-        let path = format!("{}{}{}", LETTERS_FOLDER, words::Letter::char_name(*c), LETTERS_EXT);
+        let path = format!("{}{}{}", LETTERS_FOLDER, Letter::char_name(*c), LETTERS_EXT);
 
         this.to_image().save(path).unwrap();
 
