@@ -9,14 +9,16 @@ pub static CHARS : [char; 32] = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J
 #[derive(Debug)]
 pub struct Letter<'a> {
     pub raw: char,
-    pub width: f32,
-    pub img: Option<image::RgbaImage>,
+    width: f32,
+    img: Option<image::RgbaImage>,
     page_props: &'a PageProps<'a>,
 }
 
 impl<'a> Letter<'a> {
     pub fn new(letter: char, page_props: &'a PageProps<'a>) -> Letter<'a> {
-        Letter { raw: letter, width: Letter::char_width(letter), img: None, page_props }
+        let mut this = Letter { raw: letter, width: 0.0, img: None, page_props };
+        this.set_image();
+        this
     }
 
     pub fn char_name(letter: char) -> String {
@@ -31,16 +33,6 @@ impl<'a> Letter<'a> {
         }
     }
 
-    pub fn char_width(letter: char) -> f32 {
-        match letter {
-            _ => 30.0,
-        }
-    }
-
-    pub fn spc_width() -> f32 {
-        Letter::char_width(' ')
-    }
-
     pub fn get_letter_path(letter: char) -> String {
         format!("./src/assets/{}.png", Letter::char_name(letter))
     }
@@ -49,6 +41,45 @@ impl<'a> Letter<'a> {
         let path = Letter::get_letter_path(letter);
 
         image::open(path)
+    }
+
+    pub fn set_image(&mut self) {
+        let img = match Letter::get_img(self.raw) {
+            Ok(i) => i,
+            Err(e) => panic!(e),
+        };
+        let height = self.page_props.line_height as u32;
+        let prop = height / img.height();
+        let width = img.width() * prop;
+        let img = img.resize(width, height, image::imageops::FilterType::Lanczos3);
+
+        self.img = Some(img.to_rgba());
+
+    }
+
+    pub fn img(&mut self) -> &image::RgbaImage {
+        match &self.img {
+            Some(i) => &i,
+            None => panic!("img error!"),
+        }
+    }
+
+    pub fn width(&mut self) -> f32 {
+        if self.width != 0.0 {
+            self.width
+        } else {
+            match &self.img {
+                Some(img) => {
+                    self.width = img.width() as f32;
+                    self.width
+                },
+                None => {
+                    self.set_image();
+                    self.width = self.img().width() as f32;
+                    self.width
+                },
+            }
+        }
     }
 }
 
@@ -72,8 +103,8 @@ impl<'a> Word<'a> {
         let chars : Vec<char> = this.raw.chars().collect();
 
         for l_char in chars {
-            let letter = Letter::new(l_char, this.page_props);
-            this.width += letter.width;
+            let mut letter = Letter::new(l_char, this.page_props);
+            this.width += letter.width();
             this.letters.push(letter);
         }
 
@@ -89,21 +120,23 @@ pub struct Line<'a> {
     words: Vec<Word<'a>>,
     width: f32,
     spaces_counter: i32,
+    page_props: &'a pages::PageProps<'a>
 }
 
 impl<'a> Line<'a> {
-    pub fn new() -> Line<'a> {
+    pub fn new(page_props: &'a pages::PageProps<'a>) -> Line<'a> {
         Line {
             words: Vec::new(),
             width: 0.0,
             spaces_counter: 0,
+            page_props,
         }
     }
 
     pub fn push(&mut self, word: Word<'a>) {
         if self.width != 0.0 {
             self.spaces_counter += 1;
-            self.width += Letter::spc_width();
+            self.width += word.page_props.space_width;
         }
         self.width += word.width;
         self.words.push(word);
@@ -128,15 +161,15 @@ impl<'a> Text<'a> {
     pub fn push_word(&mut self, word: Word<'a>) {
         match self.lines.last_mut() {
             Some(actual_line) => {
-                if actual_line.width + word.width + Letter::spc_width() > self.page_props.line_max_width() {
-                    self.lines.push(Line::new());
+                if actual_line.width + word.width + self.page_props.space_width > self.page_props.line_max_width() {
+                    self.lines.push(Line::new(self.page_props));
                     self.push_word(word);
                 } else {
                     actual_line.push(word);
                 }
             },
             None => {
-                self.lines.push(Line::new());
+                self.lines.push(Line::new(self.page_props));
                 self.push_word(word);
             }
         }
@@ -163,22 +196,22 @@ impl<'a> Text<'a> {
         }
     }
 
-    pub fn to_img(&self) -> Vec<RgbImage> {
+    pub fn to_img(&mut self) -> Vec<RgbaImage> {
         let mut pages = Vec::new();
 
         let mut page = self.page_props.white_page();
 
         let mut y = self.page_props.margins;
-        for line in &self.lines {
+        for line in self.lines.iter_mut() {
             let mut x = self.page_props.margins;
-            for word in &line.words {
-                for letter in &word.letters {
-                    let l_img = Letter::get_img(letter.raw).unwrap();
-                    imageops::overlay(&mut page, &l_img.to_rgb(), x as u32, y as u32);
-                    x += letter.width;
+            for word in line.words.iter_mut() {
+                for letter in word.letters.iter_mut() {
+                    let l_img = letter.img();
+                    imageops::overlay(&mut page, l_img, x as u32, y as u32);
+                    x += letter.width();
                 }
 
-                x += Letter::spc_width();
+                x += self.page_props.space_width;
             }
 
             y += self.page_props.line_height;
