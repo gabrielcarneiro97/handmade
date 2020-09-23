@@ -20,4 +20,4 @@ impl PageProps<'_> {
     }
 }
 
-pub static DEFAULT : PageProps = PageProps { line_height: 35.0, margins: 10.0, canvas: &canvas::A4, space_width: 30.0 };
+pub static DEFAULT : PageProps = PageProps { line_height: 20.0, margins: 10.0, canvas: &canvas::A4, space_width: 15.0 };

@@ -4,6 +4,8 @@ use pages::PageProps;
 
 use image::*;
 
+use std::{cell::RefCell, collections::HashMap};
+
 pub static CHARS : [char; 32] = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '?', '!', ',', '.', ';', ':'];
 
 #[derive(Debug)]
@@ -11,12 +13,14 @@ pub struct Letter<'a> {
     pub raw: char,
     width: f32,
     img: Option<image::RgbaImage>,
+    img_ref: Option<&'a image::RgbaImage>,
     page_props: &'a PageProps<'a>,
+    imgs_map: Option<&'a RefCell<HashMap<String, image::RgbaImage>>>,
 }
 
 impl<'a> Letter<'a> {
     pub fn new(letter: char, page_props: &'a PageProps<'a>) -> Letter<'a> {
-        let mut this = Letter { raw: letter, width: 0.0, img: None, page_props };
+        let mut this = Letter { raw: letter, width: 0.0, img: None, page_props, imgs_map: None, img_ref: None };
         this.set_image();
         this
     }
@@ -37,30 +41,44 @@ impl<'a> Letter<'a> {
         format!("./src/assets/{}.png", Letter::char_name(letter))
     }
 
-    pub fn get_img(letter: char) -> ImageResult<DynamicImage> {
+    pub fn get_img(letter: char) -> DynamicImage {
         let path = Letter::get_letter_path(letter);
 
-        image::open(path)
+        image::open(path).unwrap()
     }
 
     pub fn set_image(&mut self) {
-        let img = match Letter::get_img(self.raw) {
-            Ok(i) => i,
-            Err(e) => panic!(e),
+        match self.imgs_map {
+            Some(imgs_map) => {
+                let key = Letter::get_letter_path(self.raw);
+                match imgs_map.borrow().get(&key) {
+                    Some(img) => {
+                        self.img_ref = Some(img);
+                    }
+                    None => {}
+                };
+            },
+            None => {
+                let img = Letter::get_img(self.raw);
+
+                let height = self.page_props.line_height;
+                let prop = height / img.height() as f32;
+                let width = img.width() as f32 * prop;
+                let img = img.resize(width as u32, height as u32, image::imageops::FilterType::Lanczos3);
+                let img = img.to_rgba();
+
+                self.img = Some(img);
+            },
         };
-        let height = self.page_props.line_height as u32;
-        let prop = height / img.height();
-        let width = img.width() * prop;
-        let img = img.resize(width, height, image::imageops::FilterType::Lanczos3);
-
-        self.img = Some(img.to_rgba());
-
     }
 
     pub fn img(&mut self) -> &image::RgbaImage {
-        match &self.img {
-            Some(i) => &i,
-            None => panic!("img error!"),
+        match &self.img_ref {
+            Some(i) => i,
+            None => match &self.img {
+                Some(i) => &i,
+                None => panic!("img error!"),
+            }
         }
     }
 
@@ -216,7 +234,7 @@ impl<'a> Text<'a> {
 
             y += self.page_props.line_height;
 
-            if y >= self.page_props.canvas.height as f32 - self.page_props.margins + self.page_props.line_height {
+            if y + self.page_props.line_height >= self.page_props.canvas.height as f32 - self.page_props.margins {
                 pages.push(page);
                 page = self.page_props.white_page();
                 y = self.page_props.margins;
