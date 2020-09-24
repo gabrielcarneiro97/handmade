@@ -26,8 +26,12 @@ impl<'a> ImagesMap<'a> {
         imgs_map
     }
 
+    pub fn keygen(letter: char) -> String {
+        Letter::get_letter_path(letter)
+    }
+
     pub fn insert_letter(&mut self, letter: char) {
-        let key = Letter::get_letter_path(letter);
+        let key = ImagesMap::keygen(letter);
         let image = Letter::get_resized_image(letter, self.page_props.line_height);
         self.map.insert(key, image);
     }
@@ -39,8 +43,9 @@ impl<'a> ImagesMap<'a> {
         }
     }
 
-    pub fn get(&self, key: &String) -> Option<&RgbaImage> {
-        self.map.get(key)
+    pub fn get(&self, letter: char) -> Option<&RgbaImage> {
+        let key = ImagesMap::keygen(letter);
+        self.map.get(&key)
     }
 }
 
@@ -105,8 +110,7 @@ impl<'a> Letter<'a> {
     }
 
     pub fn img(&mut self) -> &RgbaImage {
-        let key = Letter::get_letter_path(self.raw);
-        &self.imgs_map.get(&key).unwrap()
+        &self.imgs_map.get(self.raw).unwrap()
     }
 
     pub fn width(&mut self) -> f32 {
@@ -159,16 +163,18 @@ pub struct Line<'a> {
     words: Vec<Word<'a>>,
     width: f32,
     spaces_counter: i32,
-    page_props: &'a pages::PageProps<'a>
+    page_props: &'a pages::PageProps<'a>,
+    imgs_map: Rc<ImagesMap<'a>>
 }
 
 impl<'a> Line<'a> {
-    pub fn new(page_props: &'a pages::PageProps<'a>) -> Line<'a> {
+    pub fn new(page_props: &'a pages::PageProps<'a>, imgs_map: Rc<ImagesMap<'a>>) -> Line<'a> {
         Line {
             words: Vec::new(),
             width: 0.0,
             spaces_counter: 0,
             page_props,
+            imgs_map
         }
     }
 
@@ -205,14 +211,14 @@ impl<'a> Text<'a> {
                 let word = Word::new(s_word, self.page_props, Rc::clone(&self.imgs_map));
 
                 if actual_line.width + word.width + self.page_props.space_width > self.page_props.line_max_width() {
-                    self.lines.push(Line::new(self.page_props));
+                    self.lines.push(Line::new(self.page_props, Rc::clone(&self.imgs_map)));
                     self.push_word(s_word);
                 } else {
                     actual_line.push(word);
                 }
             },
             None => {
-                self.lines.push(Line::new(self.page_props));
+                self.lines.push(Line::new(self.page_props, Rc::clone(&self.imgs_map)));
                 self.push_word(s_word);
             }
         }
