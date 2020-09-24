@@ -26,11 +26,16 @@ impl<'a> ImagesMap<'a> {
         imgs_map
     }
 
+    pub fn insert_letter(&mut self, letter: char) {
+        let key = Letter::get_letter_path(letter);
+        let image = Letter::get_resized_image(letter, self.page_props.line_height);
+        self.map.insert(key, image);
+    }
+
     pub fn populate(&mut self) {
         for letter in &CHARS {
-            let key = Letter::get_letter_path(*letter);
-            let image = Letter::get_resized_image(*letter, self.page_props.line_height);
-            self.map.insert(key, image);
+            self.insert_letter(*letter);
+            self.insert_letter(letter.to_lowercase().next().unwrap());
         }
     }
 
@@ -61,8 +66,13 @@ impl<'a> Letter<'a> {
             '.' => String::from("dot"),
             ':' => String::from("colon"),
             _ => {
-                if CHARS.contains(&letter) {
-                    format!("{}", letter)
+                if CHARS.contains(&letter.to_uppercase().next().unwrap()) {
+                    let upper = match letter.is_uppercase() {
+                        true => "uc",
+                        false => "lc"
+                    };
+
+                    format!("{}-{}", letter.to_lowercase().next().unwrap(), upper)
                 } else {
                     String::from("question_mark")
                 }
@@ -71,7 +81,10 @@ impl<'a> Letter<'a> {
     }
 
     pub fn get_letter_path(letter: char) -> String {
-        format!("./src/assets/{}.png", Letter::char_name(letter))
+        let folder : &str = "./src/assets/";
+        let ext : &str = ".png";
+
+        format!("{}{}{}", folder, Letter::char_name(letter), ext)
     }
 
     pub fn get_img(letter: char) -> DynamicImage {

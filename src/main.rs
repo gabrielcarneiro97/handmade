@@ -14,6 +14,8 @@ static _LOREM : &str = "Lorem ipsum dolor sit amet, consectetur adipiscing elit.
 fn main() {
     // text_img::update_images("./src/assets/00 abc 2.png");
 
+    // println!("{}", 'A'.to_lowercase().next().unwrap());
+
     // let img = match image::open("./src/assets/00 abc 2.png") {
     //     Ok(i) => i,
     //     Err(e) => panic!(e),
