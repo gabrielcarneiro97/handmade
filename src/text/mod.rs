@@ -55,11 +55,11 @@ impl<'a> ImagesMap<'a> {
         }
     }
 
-    pub fn keygen(letter: char) -> String {
+    pub fn keygen(letter : char) -> String {
         Letter::char_name(letter)
     }
 
-    pub fn insert_letter(&self, letter: char) {
+    pub fn insert_letter(&self, letter : char) {
         let key = ImagesMap::keygen(letter);
         let image = Letter::get_resized_image(letter, self.page_props.line_height);
         self.map.borrow_mut().insert(key, Rc::new(image));
@@ -72,7 +72,7 @@ impl<'a> ImagesMap<'a> {
         }
     }
 
-    pub fn get(&self, letter: char) -> Option<Rc<RgbaImage>> {
+    pub fn get(&self, letter : char) -> Option<Rc<RgbaImage>> {
         let key = ImagesMap::keygen(letter);
         self.map.borrow().get(&key).map(|i| Rc::clone(i))
     }
@@ -87,11 +87,11 @@ pub struct Letter<'a> {
 }
 
 impl<'a> Letter<'a> {
-    pub fn new(letter: char, page_props: &'a PageProps<'a>, imgs_map: Rc<ImagesMap<'a>>) -> Letter<'a> {
+    pub fn new(letter : char, page_props : &'a PageProps<'a>, imgs_map : Rc<ImagesMap<'a>>) -> Letter<'a> {
         Letter { raw: letter, width: None, page_props, imgs_map }
     }
 
-    pub fn char_name(letter: char) -> String {
+    pub fn char_name(letter : char) -> String {
         match letter {
             '?' => String::from("question_mark"),
             '!' => String::from("exclamation_mark"),
@@ -114,16 +114,16 @@ impl<'a> Letter<'a> {
         }
     }
 
-    pub fn get_letter_path(letter: char) -> PathBuf {
+    pub fn get_letter_path(letter : char) -> PathBuf {
         paths::letter_path(Letter::char_name(letter))
     }
 
-    pub fn get_img(letter: char) -> DynamicImage {
+    pub fn get_img(letter : char) -> DynamicImage {
         let path = Letter::get_letter_path(letter);
         image::open(path).unwrap()
     }
 
-    pub fn get_resized_image(letter: char, line_height: f32) -> RgbaImage {
+    pub fn get_resized_image(letter : char, line_height : f32) -> RgbaImage {
         let img = Letter::get_img(letter);
 
         let prop = line_height / img.height() as f32;
@@ -165,7 +165,7 @@ pub struct Word<'a> {
 }
 
 impl<'a> Word<'a> {
-    pub fn new(str: &str, page_props: &'a PageProps<'a>, imgs_map: Rc<ImagesMap<'a>>) -> Word<'a> {
+    pub fn new(str : &str, page_props : &'a PageProps<'a>, imgs_map : Rc<ImagesMap<'a>>) -> Word<'a> {
         let chars : Vec<char> = str.chars().collect();
         let mut width = 0.0;
         let mut letters = Vec::new();
@@ -199,7 +199,7 @@ pub struct Line<'a> {
 }
 
 impl<'a> Line<'a> {
-    pub fn new(page_props: &'a PageProps<'a>, imgs_map: Rc<ImagesMap<'a>>) -> Line<'a> {
+    pub fn new(page_props : &'a PageProps<'a>, imgs_map : Rc<ImagesMap<'a>>) -> Line<'a> {
         Line {
             words: Vec::new(),
             width: 0.0,
@@ -209,7 +209,7 @@ impl<'a> Line<'a> {
         }
     }
 
-    pub fn push(&mut self, word: Word<'a>) {
+    pub fn push(&mut self, word : Word<'a>) {
         if self.width != 0.0 {
             self.spaces_counter += 1;
             self.width += word.page_props.space_width;
@@ -227,7 +227,7 @@ pub struct Text<'a> {
 }
 
 impl<'a> Text<'a> {
-    pub fn new(page_props: &'a PageProps) -> Text<'a> {
+    pub fn new(page_props : &'a PageProps) -> Text<'a> {
         Text {
             raw: String::new(),
             page_props,
@@ -236,7 +236,7 @@ impl<'a> Text<'a> {
         }
     }
 
-    pub fn new_with_map(page_props: &'a PageProps, imgs_map: Rc<ImagesMap<'a>>) -> Text<'a> {
+    pub fn new_with_map(page_props : &'a PageProps, imgs_map : Rc<ImagesMap<'a>>) -> Text<'a> {
         Text {
             raw: String::new(),
             page_props,
@@ -245,7 +245,7 @@ impl<'a> Text<'a> {
         }
     }
 
-    pub fn push_word(&mut self, s_word: &str) {
+    pub fn push_word(&mut self, s_word : &str) {
         match self.lines.last_mut() {
             Some(actual_line) => {
                 let word = Word::new(s_word, self.page_props, Rc::clone(&self.imgs_map));
@@ -276,7 +276,7 @@ impl<'a> Text<'a> {
         self.raw = string;
     }
 
-    pub fn parse_str(&mut self, str: &str) {
+    pub fn parse_str(&mut self, str : &str) {
         self.parse(String::from(str));
     }
 
