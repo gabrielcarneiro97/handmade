@@ -99,7 +99,7 @@ impl<'a> Letter<'a> {
 
         let prop = line_height / img.height() as f32;
         let width = img.width() as f32 * prop;
-        let img = img.resize(width as u32, line_height as u32, image::imageops::FilterType::Lanczos3);
+        let img = img.resize(width as u32, line_height as u32, imageops::FilterType::Lanczos3);
         let img = img.to_rgba();
 
         img
@@ -131,12 +131,12 @@ pub struct Word<'a> {
     pub raw: String,
     pub letters: Vec<Letter<'a>>,
     pub width: f32,
-    page_props: &'a pages::PageProps<'a>,
+    page_props: &'a PageProps<'a>,
     imgs_map: Rc<ImagesMap<'a>>,
 }
 
 impl<'a> Word<'a> {
-    pub fn new(str: &str, page_props: &'a pages::PageProps<'a>, imgs_map: Rc<ImagesMap<'a>>) -> Word<'a> {
+    pub fn new(str: &str, page_props: &'a PageProps<'a>, imgs_map: Rc<ImagesMap<'a>>) -> Word<'a> {
         let chars : Vec<char> = str.chars().collect();
         let mut width = 0.0;
         let mut letters = Vec::new();
@@ -165,12 +165,12 @@ pub struct Line<'a> {
     words: Vec<Word<'a>>,
     width: f32,
     spaces_counter: i32,
-    page_props: &'a pages::PageProps<'a>,
+    page_props: &'a PageProps<'a>,
     imgs_map: Rc<ImagesMap<'a>>
 }
 
 impl<'a> Line<'a> {
-    pub fn new(page_props: &'a pages::PageProps<'a>, imgs_map: Rc<ImagesMap<'a>>) -> Line<'a> {
+    pub fn new(page_props: &'a PageProps<'a>, imgs_map: Rc<ImagesMap<'a>>) -> Line<'a> {
         Line {
             words: Vec::new(),
             width: 0.0,
