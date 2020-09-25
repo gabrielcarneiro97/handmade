@@ -14,18 +14,40 @@ static _LOREM : &str = "Lorem ipsum dolor sit amet, consectetur adipiscing elit.
 fn main() {
     // text_img::update_images("./src/assets/00 abc 2.png");
 
-    // let mut img = match image::open("./src/assets/00 abc 2.png") {
-    //     Ok(i) => i,
-    //     Err(e) => panic!(e),
-    // };
+    let mut img = match image::open("./src/assets/a-lc.png") {
+        Ok(i) => i,
+        Err(e) => panic!(e),
+    };
 
-    // let img = img.to_rgba();
+    let img = img.to_rgba();
 
-    // let res = connected_components(&img, Connectivity::Eight, image::Rgba([255, 255, 255, 1]));
+    let res = connected_components(&img, Connectivity::Eight, image::Rgba([255, 255, 255, 1]));
     // res.save("./src/assets/00 abc 2 connected.png");
     // println!("{:?}", res);
 
-    let mut text = Text::new(&pages::DEFAULT);
-    text.parse_str(_LOREM);
-    text.to_files();
+    let mut x0 = 0;
+    let mut y0 = 0;
+    let mut h = 0;
+    let mut w = 0;
+
+    for y in 0..res.height() {
+        for x in 0..res.width() {
+            let pixel = res.get_pixel(x, y);
+            let l_val = pixel.0[0];
+
+            if l_val >= 10 {
+                if w < x && x < w + 3 {
+                    w = x;
+                }
+                if h < y {
+                    h = y;
+                }
+            }
+        }
+        println!();
+    }
+
+    // let mut text = Text::new(&pages::DEFAULT);
+    // text.parse_str(_LOREM);
+    // text.to_files();
 }
