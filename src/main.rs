@@ -55,7 +55,7 @@ fn rows_avg(connected : &image::ImageBuffer<image::Luma<u32>, std::vec::Vec<u32>
             let px = connected.get_pixel(x, y).0[0];
             avg += px as f32;
         }
-        avg /= connected.height() as f32;
+        avg /= connected.width() as f32;
         avgs.push(avg);
     }
 
