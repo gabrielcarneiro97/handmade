@@ -4,48 +4,44 @@ use pages::PageProps;
 
 use image::*;
 
-use std::{rc::Rc, collections::HashMap};
+use std::{rc::Rc, cell::{RefCell}, collections::HashMap};
 
 pub static CHARS : [char; 32] = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '?', '!', ',', '.', ';', ':'];
 
 #[derive(Debug)]
 pub struct ImagesMap<'a> {
-    map: HashMap<String, RgbaImage>,
+    map: RefCell<HashMap<String, Rc<RgbaImage>>>,
     page_props: &'a PageProps<'a>,
 }
 
 impl<'a> ImagesMap<'a> {
     pub fn new(page_props: &'a PageProps<'a>) -> ImagesMap {
-        let mut imgs_map = ImagesMap {
-            map: HashMap::new(),
+        ImagesMap {
+            map: RefCell::new(HashMap::new()),
             page_props
-        };
-
-        imgs_map.populate();
-
-        imgs_map
+        }
     }
 
     pub fn keygen(letter: char) -> String {
         Letter::get_letter_path(letter)
     }
 
-    pub fn insert_letter(&mut self, letter: char) {
+    pub fn insert_letter(&self, letter: char) {
         let key = ImagesMap::keygen(letter);
         let image = Letter::get_resized_image(letter, self.page_props.line_height);
-        self.map.insert(key, image);
+        self.map.borrow_mut().insert(key, Rc::new(image));
     }
 
-    pub fn populate(&mut self) {
+    pub fn populate(&self) {
         for letter in &CHARS {
             self.insert_letter(*letter);
             self.insert_letter(letter.to_lowercase().next().unwrap());
         }
     }
 
-    pub fn get(&self, letter: char) -> Option<&RgbaImage> {
+    pub fn get(&self, letter: char) -> Option<Rc<RgbaImage>> {
         let key = ImagesMap::keygen(letter);
-        self.map.get(&key)
+        self.map.borrow().get(&key).map(|i| Rc::clone(i))
     }
 }
 
@@ -109,8 +105,14 @@ impl<'a> Letter<'a> {
         img
     }
 
-    pub fn img(&mut self) -> &RgbaImage {
-        &self.imgs_map.get(self.raw).unwrap()
+    pub fn img(&mut self) -> Rc<RgbaImage> {
+        match &self.imgs_map.get(self.raw) {
+            Some(img_ref) => Rc::clone(img_ref),
+            None => {
+                &self.imgs_map.insert_letter(self.raw);
+                self.img()
+            }
+        }
     }
 
     pub fn width(&mut self) -> f32 {
@@ -259,7 +261,7 @@ impl<'a> Text<'a> {
             let mut x = self.page_props.margins;
             for word in line.words.iter_mut() {
                 for letter in word.letters.iter_mut() {
-                    let l_img = letter.img();
+                    let l_img = &*letter.img();
                     imageops::overlay(&mut page, l_img, x as u32, y as u32);
                     x += letter.width();
                 }
