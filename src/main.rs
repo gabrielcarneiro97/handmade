@@ -14,9 +14,7 @@ static _LOREM : &str = "Lorem ipsum dolor sit amet, consectetur adipiscing elit.
 fn main() {
     // text_img::update_images("./src/assets/00 abc 2.png");
 
-    // println!("{}", 'A'.to_lowercase().next().unwrap());
-
-    // let img = match image::open("./src/assets/00 abc 2.png") {
+    // let mut img = match image::open("./src/assets/00 abc 2.png") {
     //     Ok(i) => i,
     //     Err(e) => panic!(e),
     // };
@@ -29,10 +27,5 @@ fn main() {
 
     let mut text = Text::new(&pages::DEFAULT);
     text.parse_str(_LOREM);
-
-    let images = text.to_img();
-
-    for (i, img) in images.iter().enumerate() {
-        img.save(format!("./output/pag-{}.png", i)).unwrap();
-    }
+    text.to_files();
 }

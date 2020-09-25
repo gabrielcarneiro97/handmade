@@ -4,9 +4,42 @@ use pages::PageProps;
 
 use image::*;
 
-use std::{rc::Rc, cell::{RefCell}, collections::HashMap};
+use std::{rc::Rc, cell::{RefCell}, collections::HashMap, path::PathBuf};
 
 pub static CHARS : [char; 32] = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '?', '!', ',', '.', ';', ':'];
+
+pub mod paths {
+    use std::path::PathBuf;
+
+    pub fn root_dir() -> PathBuf {
+        ["."].iter().collect()
+    }
+
+    pub fn output_dir() -> PathBuf {
+        PathBuf::from(root_dir()).join("output")
+    }
+
+    pub fn src_dir() -> PathBuf {
+        PathBuf::from(root_dir()).join("src")
+    }
+
+    pub fn assets_dir() -> PathBuf {
+        PathBuf::from(src_dir()).join("assets")
+    }
+
+    pub fn page_path(page : usize) -> PathBuf {
+        let mut file_name = PathBuf::from(format!("page-{}", page));
+        file_name.set_extension("png");
+        output_dir().join(file_name)
+    }
+
+    pub fn letter_path(letter_name : String) -> PathBuf {
+        let mut path = assets_dir().join(letter_name);
+        path.set_extension("png");
+        path
+    }
+
+}
 
 #[derive(Debug)]
 pub struct ImagesMap<'a> {
@@ -23,7 +56,7 @@ impl<'a> ImagesMap<'a> {
     }
 
     pub fn keygen(letter: char) -> String {
-        Letter::get_letter_path(letter)
+        Letter::char_name(letter)
     }
 
     pub fn insert_letter(&self, letter: char) {
@@ -81,16 +114,12 @@ impl<'a> Letter<'a> {
         }
     }
 
-    pub fn get_letter_path(letter: char) -> String {
-        let folder : &str = "./src/assets/";
-        let ext : &str = ".png";
-
-        format!("{}{}{}", folder, Letter::char_name(letter), ext)
+    pub fn get_letter_path(letter: char) -> PathBuf {
+        paths::letter_path(Letter::char_name(letter))
     }
 
     pub fn get_img(letter: char) -> DynamicImage {
         let path = Letter::get_letter_path(letter);
-
         image::open(path).unwrap()
     }
 
@@ -290,5 +319,18 @@ impl<'a> Text<'a> {
 
         pages.push(page);
         pages
+    }
+
+    pub fn to_files(&mut self) {
+        let images = self.to_img();
+
+        match std::fs::create_dir(paths::output_dir()) {
+            Ok(_) => (),
+            Err(_) => ()
+        };
+
+        for (i, img) in images.iter().enumerate() {
+            img.save(paths::page_path(i + 1)).unwrap();
+        }
     }
 }
