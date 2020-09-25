@@ -207,6 +207,15 @@ impl<'a> Text<'a> {
         }
     }
 
+    pub fn new_with_map(page_props: &'a PageProps, imgs_map: Rc<ImagesMap<'a>>) -> Text<'a> {
+        Text {
+            raw: String::new(),
+            page_props,
+            lines: Vec::new(),
+            imgs_map,
+        }
+    }
+
     pub fn push_word(&mut self, s_word: &str) {
         match self.lines.last_mut() {
             Some(actual_line) => {
