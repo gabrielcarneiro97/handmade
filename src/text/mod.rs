@@ -6,7 +6,11 @@ use image::*;
 
 use std::{rc::Rc, cell::{RefCell}, collections::HashMap, path::PathBuf};
 
-pub static CHARS : [char; 32] = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '?', '!', ',', '.', ';', ':'];
+pub static CHARS_ONLY_UPPER : [char; 32] = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '?', '!', ',', '.', ';', ':'];
+
+pub static CHARS_UNDER : [char; 6] = ['g', 'j', 'p', 'q', 'y', ','];
+
+pub static CHARS : [char; 58] = ['A', 'a', 'B', 'b', 'C', 'c', 'D', 'd', 'E', 'e', 'F', 'f', 'G', 'g', 'H', 'h', 'I', 'i', 'J', 'j', 'K', 'k', 'L', 'l', 'M', 'm', 'N', 'n', 'O', 'o', 'P', 'p', 'Q', 'q', 'R', 'r', 'S', 's', 'T', 't', 'U', 'u', 'V', 'v', 'W', 'w', 'X', 'x', 'Y', 'y', 'Z', 'z', '?', '!', ',', '.', ';', ':'];
 
 pub mod paths {
     use std::path::PathBuf;
@@ -66,7 +70,7 @@ impl<'a> ImagesMap<'a> {
     }
 
     pub fn populate(&self) {
-        for letter in &CHARS {
+        for letter in CHARS.iter() {
             self.insert_letter(*letter);
             self.insert_letter(letter.to_lowercase().next().unwrap());
         }

@@ -5,4 +5,4 @@ pub struct CanvasProps<'a> {
     pub height: u32,
 }
 
-pub static A4 : CanvasProps = CanvasProps { name: "A4 1:1", width: 595, height: 842 };
+pub static A4 : CanvasProps = CanvasProps { name: "A4 1:1", width: 2975, height: 4210 };
