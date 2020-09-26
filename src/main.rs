@@ -133,7 +133,7 @@ fn main() {
     println!("{}", images.len());
 
     for (i, l_img) in images.iter().enumerate() {
-        l_img.save(format!("./test/{}.png", i));
+        l_img.save(format!("./test/{}.png", i)).unwrap();
     }
 
 
