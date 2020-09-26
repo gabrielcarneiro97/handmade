@@ -8,6 +8,8 @@ pub struct PageProps<'a> {
     pub margins: f32,
     pub line_height: f32,
     pub space_width: f32,
+    pub lower_size: f32,
+    pub upper_size: f32,
 }
 
 impl PageProps<'_> {
@@ -20,4 +22,4 @@ impl PageProps<'_> {
     }
 }
 
-pub static DEFAULT : PageProps = PageProps { line_height: 20.0, margins: 10.0, canvas: &canvas::A4, space_width: 15.0 };
+pub static DEFAULT : PageProps = PageProps { canvas: &canvas::A4, line_height: 20.0, margins: 10.0, space_width: 15.0, upper_size: 0.8, lower_size: 0.6 };

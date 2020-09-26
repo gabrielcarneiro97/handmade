@@ -70,17 +70,72 @@ fn main() {
         Err(e) => panic!(e),
     };
 
-    let img = img.to_rgba();
-
-    let res = connected_components(&img, Connectivity::Eight, image::Rgba([255, 255, 255, 1]));
+    let con = connected_components(&img, Connectivity::Eight, image::Rgba([255, 255, 255, 1]));
     // res.save("./src/assets/00 abc 2 connected.png");
     // println!("{:?}", res);
 
-    let bkg = find_bkg(&res);
+    let bkg = find_bkg(&con);
 
-    let avgs = rows_avg(&res);
+    // let avgs = rows_avg(&res);
 
-    println!("{:?}", avgs);
+    let c_avg = cols_avg(&con);
+
+
+    let mut images = Vec::new();
+
+    let mut x : u32 = 0;
+    let mut width : u32;
+
+    for (i, col_avg) in c_avg.iter().enumerate() {
+        // println!("col_avg: {}", col_avg);
+        if *col_avg > 10.0 {
+            if x == 0 {
+                x = i as u32;
+            }
+        } else if x != 0 {
+            width = i as u32 - x;
+            if width > 5 {
+                let letter = image::imageops::crop(&mut img, x, 0, width, con.height()).to_image();
+
+                let letter_con = connected_components(&letter, Connectivity::Eight, image::Rgba([255, 255, 255, 1]));
+
+                let mut r_avg = rows_avg(&letter_con);
+
+                let mut y : u32 = 0;
+                let mut height : u32 = 0;
+
+                for (i2, row_avg) in r_avg.iter().enumerate() {
+                    if *row_avg > 10.0 && y == 0 {
+                        y = i2 as u32;
+                        break;
+                    }
+                }
+
+                r_avg.reverse();
+
+                for (i2, row_avg) in r_avg.iter().enumerate() {
+                    if *row_avg > 10.0 {
+                        height = r_avg.len() as u32 - i2 as u32 - y;
+                        break;
+                    }
+                }
+
+                println!("x: {}, y: {}, width: {}, heigth: {}", x, y, width, height);
+                let letter = image::imageops::crop(&mut img, x, y, width, height).to_image();
+
+                images.push(letter);
+            }
+
+            x = 0;
+        }
+    }
+
+    println!("{}", images.len());
+
+    for (i, l_img) in images.iter().enumerate() {
+        l_img.save(format!("./test/{}.png", i));
+    }
+
 
     // let mut text = Text::new(&pages::DEFAULT);
     // text.parse_str(_LOREM);

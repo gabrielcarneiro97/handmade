@@ -11,10 +11,7 @@ pub static LETTERS_FOLDER : &str = "./src/assets/";
 pub static LETTERS_EXT : &str = ".png";
 
 pub fn update_images<P : AsRef<Path>>(path : P) {
-    let mut img = match image::open(path) {
-        Ok(i) => i,
-        Err(e) => panic!(e),
-    };
+    let mut img = image::open(path).unwrap();
 
     let mut x_pos = 0;
 
