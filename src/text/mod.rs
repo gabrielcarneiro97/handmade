@@ -20,25 +20,42 @@ pub mod paths {
     }
 
     pub fn output_dir() -> PathBuf {
-        PathBuf::from(root_dir()).join("output")
+        root_dir().join("output")
     }
 
     pub fn src_dir() -> PathBuf {
-        PathBuf::from(root_dir()).join("src")
+        root_dir().join("src")
     }
 
     pub fn assets_dir() -> PathBuf {
-        PathBuf::from(src_dir()).join("assets")
+        src_dir().join("assets")
     }
 
-    pub fn page_path(page : usize) -> PathBuf {
-        let mut file_name = PathBuf::from(format!("page-{}", page));
+    pub fn page_path(page : usize, page_name : Option<&str>) -> PathBuf {
+        let name = match page_name {
+            Some(name) => name,
+            None => "page"
+        };
+
+        let name = format!("{}-{}", name, page);
+        let mut file_name = output_dir().join(name);
         file_name.set_extension("png");
-        output_dir().join(file_name)
+        file_name
     }
 
-    pub fn letter_path(letter_name : String) -> PathBuf {
-        let mut path = assets_dir().join(letter_name);
+    pub fn letters_path() -> PathBuf {
+        root_dir().join("letters")
+    }
+
+    pub fn dic_path(dic_name: &Option<&str>) -> PathBuf {
+        match dic_name {
+            Some(name) => letters_path().join(name),
+            None => letters_path().join("default")
+        }
+    }
+
+    pub fn letter_path(letter_name : String, dic_name: &Option<&str>) -> PathBuf {
+        let mut path = dic_path(dic_name).join(letter_name);
         path.set_extension("png");
         path
     }
@@ -49,13 +66,23 @@ pub mod paths {
 pub struct ImagesMap<'a> {
     map: RefCell<HashMap<String, Rc<RgbaImage>>>,
     page_props: &'a PageProps<'a>,
+    dic_name: Option<&'a str>
 }
 
 impl<'a> ImagesMap<'a> {
     pub fn new(page_props: &'a PageProps<'a>) -> ImagesMap {
         ImagesMap {
             map: RefCell::new(HashMap::new()),
-            page_props
+            page_props,
+            dic_name: None
+        }
+    }
+
+    pub fn new_with_dic_name(page_props: &'a PageProps<'a>, dic_name: &'a str) -> ImagesMap<'a> {
+        ImagesMap {
+            map: RefCell::new(HashMap::new()),
+            page_props,
+            dic_name: Some(dic_name)
         }
     }
 
@@ -65,7 +92,7 @@ impl<'a> ImagesMap<'a> {
 
     pub fn insert_letter(&self, letter : char) {
         let key = ImagesMap::keygen(letter);
-        let image = Letter::get_resized_image(letter, self.page_props.line_height);
+        let image = Letter::get_resized_image(letter, self.page_props.line_height, &self.dic_name);
         self.map.borrow_mut().insert(key, Rc::new(image));
     }
 
@@ -118,17 +145,17 @@ impl<'a> Letter<'a> {
         }
     }
 
-    pub fn get_letter_path(letter : char) -> PathBuf {
-        paths::letter_path(Letter::char_name(letter))
+    pub fn get_letter_path(letter : char, dic_name: &Option<&str>) -> PathBuf {
+        paths::letter_path(Letter::char_name(letter), dic_name)
     }
 
-    pub fn get_img(letter : char) -> DynamicImage {
-        let path = Letter::get_letter_path(letter);
+    pub fn get_img(letter : char, dic_name: &Option<&str>) -> DynamicImage {
+        let path = Letter::get_letter_path(letter, dic_name);
         image::open(path).unwrap()
     }
 
-    pub fn get_resized_image(letter : char, line_height : f32) -> RgbaImage {
-        let img = Letter::get_img(letter);
+    pub fn get_resized_image(letter : char, line_height : f32, dic_name: &Option<&str>) -> RgbaImage {
+        let img = Letter::get_img(letter, dic_name);
 
         let prop = line_height / img.height() as f32;
         let width = img.width() as f32 * prop;
@@ -249,6 +276,15 @@ impl<'a> Text<'a> {
         }
     }
 
+    pub fn new_with_dic_name(page_props : &'a PageProps, dic_name: &'a str) -> Text<'a> {
+        Text {
+            raw: String::new(),
+            page_props,
+            lines: Vec::new(),
+            imgs_map: Rc::new(ImagesMap::new_with_dic_name(page_props, dic_name))
+        }
+    }
+
     pub fn push_word(&mut self, s_word : &str) {
         match self.lines.last_mut() {
             Some(actual_line) => {
@@ -325,7 +361,7 @@ impl<'a> Text<'a> {
         pages
     }
 
-    pub fn to_files(&mut self) {
+    pub fn to_files(&mut self, files_name : Option<&str>) {
         let images = self.to_img();
 
         match std::fs::create_dir(paths::output_dir()) {
@@ -334,7 +370,13 @@ impl<'a> Text<'a> {
         };
 
         for (i, img) in images.iter().enumerate() {
-            img.save(paths::page_path(i + 1)).unwrap();
+            println!("{:?}", paths::page_path(i + 1, files_name));
+            img.save(paths::page_path(i + 1, files_name)).unwrap();
         }
+    }
+
+    pub fn parse_to_png(&mut self, str : &str, files_name : Option<&str>) {
+        self.parse_str(str);
+        self.to_files(files_name);
     }
 }
