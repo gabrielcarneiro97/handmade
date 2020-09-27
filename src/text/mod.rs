@@ -370,7 +370,6 @@ impl<'a> Text<'a> {
         };
 
         for (i, img) in images.iter().enumerate() {
-            println!("{:?}", paths::page_path(i + 1, files_name));
             img.save(paths::page_path(i + 1, files_name)).unwrap();
         }
     }

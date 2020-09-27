@@ -11,4 +11,7 @@ Cargo.lock
 **/*.rs.bk
 
 /letters/*
-!/letters/default
+!/letters/default/00 abc.png
+
+/output/*
+!/output/example-1.png
