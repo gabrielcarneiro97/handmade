@@ -134,7 +134,7 @@ pub fn update_images<P : AsRef<Path>>(path : P) {
             width
         };
 
-        let mut bkg = image::RgbaImage::new(width, line_height as u32);
+        let mut bkg = image::RgbaImage::from_pixel(width, line_height as u32, image::Rgba([255, 255, 255, 1]));
 
         let x = 0;
         let y = if CHARS_UNDER.contains(c) {
