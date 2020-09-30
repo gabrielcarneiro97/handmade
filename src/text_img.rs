@@ -1,11 +1,6 @@
-#[path = "./text/mod.rs"]
-mod text;
-
-use text::*;
+use super::text::*;
 
 use image;
-
-use std::{convert::AsRef, path::Path};
 
 pub static LETTERS_FOLDER : &str = "./src/assets/";
 pub static LETTERS_EXT : &str = ".png";
@@ -51,7 +46,7 @@ fn rows_gray_avg(img : &image::ImageBuffer<image::Luma<u8>, std::vec::Vec<u8>>) 
 }
 
 pub fn update_images(dic_name : Option<&str>) {
-    let dic_path = text::paths::dic_path(&dic_name);
+    let dic_path = paths::dic_path(&dic_name);
 
     let abc_path = dic_path.join("00 abc.png");
 
@@ -149,7 +144,7 @@ pub fn update_images(dic_name : Option<&str>) {
 
         image::imageops::overlay(&mut bkg, &letter, x, y);
 
-        let mut l_path = dic_path.join(text::Letter::char_name(*c));
+        let mut l_path = dic_path.join(Letter::char_name(*c));
         l_path.set_extension("png");
 
         bkg.save(l_path).unwrap();
