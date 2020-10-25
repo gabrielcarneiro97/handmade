@@ -12,7 +12,4 @@ name="handmade"
 path="src/lib.rs"
 
 [dependencies]
-rand = "0.7.3"
-image = "*"
-imageproc = "*"
-
+image = "0.23.10"
