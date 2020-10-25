@@ -5,6 +5,9 @@ authors = ["Gabriel Carneiro <gabriel.carneiro.castro@gmail.com>"]
 edition = "2018"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[lib]
+name="handmade"
+path="src/lib.rs"
 
 [dependencies]
 rand = "0.7.3"
