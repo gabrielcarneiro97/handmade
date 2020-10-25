@@ -1,9 +1,6 @@
-```
 <p align="center">
   <img width="50%" src="./logo.png" alt="a type machine!">
 </p>
-```
-
 <div align="center">
 
 
