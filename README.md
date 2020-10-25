@@ -1,5 +1,6 @@
 <div align="center">
 
+
   <img width="50%" src="./notes-logo.png" alt="some handmade notes!">
 
   <h1><code>handmade</code></h1>
