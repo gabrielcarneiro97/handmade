@@ -10,7 +10,7 @@
 </div>
 
 
-## Example
+## 📓 Example
 
 ### Default Dictionary
 
@@ -41,7 +41,7 @@ fn main() {
 }
 ```
 
-You'll find the result at the output folder named `example-1.png`. For each page `handmade` will create a file and will put it on the output file. If `None` is used at `parse_to_png` function, the files identifier will be `page`.
+You'll find the result at the `output` folder in a file named `example-1.png`. For each page, `handmade` will create a file and will put it on the output file. If `None` is used at `parse_to_png` function, the files identifier will be `page`.
 
 ### Your own Dictionary
 
@@ -68,7 +68,7 @@ fn main() {
 }
 ```
 
-To use you'll need to create the Text struct with the function `Text::new_with_dic_name`, passing the dictionary name, besides that, the usage is the same.
+To use, you'll need to create the `Text` struct with the function `Text::new_with_dic_name`, passing the dictionary name. Aside from that, the usage is the same.
 
 ```rust
 use handmade::{text::*, text_img};
@@ -85,14 +85,10 @@ fn main() {
 }
 ```
 
-
-
-## Documentation
+## 📘 Documentation
 
 Under construction.
 
+## 🎨 Prior Art
 
-
-## Final Thoughts 
-
-The core concept of this lib was gently taken from [handwritten.js](https://github.com/alias-rahil/handwritten.js).
+This library was inspired by the great [handwritten.js](https://github.com/alias-rahil/handwritten.js) library!
