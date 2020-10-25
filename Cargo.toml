@@ -5,6 +5,8 @@ authors = ["Gabriel Carneiro <gabriel.carneiro.castro@gmail.com>"]
 edition = "2018"
 license = "MIT"
 description = "Type with your on handwritten letter."
+repository = "https://github.com/gabrielcarneiro97/handmade"
+readme = "README.md"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [lib]
