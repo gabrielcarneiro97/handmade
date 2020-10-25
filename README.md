@@ -1,7 +1,7 @@
 <div align="center">
 
 
-  <img width="50%" src="./assets/notes-logo.png" alt="some handmade notes!">
+  <img width="50%" src="https://raw.githubusercontent.com/gabrielcarneiro97/handmade/master/assets/notes-logo.png" alt="some handmade notes!">
 
   <h1><code>handmade</code></h1>
 
@@ -46,13 +46,13 @@ You'll find the result at the `output` folder in a file named `example-1.png`. F
 
 This example above will generate this:
 
-![img](./assets/example.png)
+![img](https://raw.githubusercontent.com/gabrielcarneiro97/handmade/master/assets/example.png)
 
 ### Your own Dictionary
 
 To use your own handwritten letter, first you'll need create a file just like the example below, you can found this example at the `assets` folder at the lib [repo](https://github.com/gabrielcarneiro97/handmade/tree/master/assets):
 
-![img](./assets/00 abc.png)
+![img](https://raw.githubusercontent.com/gabrielcarneiro97/handmade/master/assets/00%20abc.png)
 
 All letters must be in one line, in this exactly order to it to work. Remove any imperfections between letters, this kind of thing can lead to unexpected results.
 
