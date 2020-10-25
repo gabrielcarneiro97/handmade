@@ -45,7 +45,7 @@ fn rows_gray_avg(img : &image::ImageBuffer<image::Luma<u8>, std::vec::Vec<u8>>) 
     avgs
 }
 
-pub fn update_images(dic_name : Option<&str>) {
+pub fn update_images(dic_name : Option<&str>) -> Result<(), String> {
     let dic_path = paths::dic_path(&dic_name);
 
     let abc_path = dic_path.join("00 abc.png");
@@ -116,7 +116,13 @@ pub fn update_images(dic_name : Option<&str>) {
     let under_line_height = over_line_height / 5.0;
     let line_height = over_line_height + under_line_height;
 
-    println!("{}", crops.len());
+    let qnt = crops.len();
+
+    println!("{}", qnt);
+
+    if qnt < 58 {
+        return Err(format!("Expected 58 characters, found {}, please sanitize the input file.", qnt));
+    }
 
     for (i, c) in CHARS.iter().enumerate() {
         let crop = &crops[i];
@@ -149,4 +155,6 @@ pub fn update_images(dic_name : Option<&str>) {
 
         bkg.save(l_path).unwrap();
     }
+
+    Ok(())
 }
