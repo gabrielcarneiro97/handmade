@@ -42,7 +42,7 @@ fn main() {
 }
 ```
 
-You'll find the result at the `output` folder in a file named `example-1.png`. For each page, `handmade` will create a file and will put it on the output file. If `None` is used at `parse_to_png` function, the files identifier will be `page`.
+You'll find the result at the `output` folder in a file named `example-1.png`. For each page, `handmade` will create a file and will put it on the `output` folder. If `None` is used at `parse_to_png` function, the files identifier will be `page`.
 
 This example above will generate this:
 
